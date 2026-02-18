@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 
 const activities = [
   { title: "Kirish muvaffaqiyatli", time: "Bugun, 10:24", status: "Ok" },
@@ -29,10 +29,12 @@ const activities = [
 export function DashboardScreen() {
   const { session, logout } = useAuthStore();
   const router = useRouter();
-  const createdAt = useMemo(() => {
-    if (!session) return null;
+  const [createdAt, setCreatedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !session) return;
     const user = getUsers().find((u) => u.id === session.userId);
-    return user?.createdAt ?? null;
+    setCreatedAt(user?.createdAt ?? null);
   }, [session]);
 
   const handleLogout = () => {

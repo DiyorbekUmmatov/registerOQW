@@ -17,7 +17,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { SocialLoginButtons } from "./social-login-buttons";
 
-type LoginValues = z.infer<typeof loginSchema>;
+// Using input type because zod default() makes the field optional on input
+type LoginValues = z.input<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();

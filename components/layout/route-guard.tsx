@@ -13,17 +13,21 @@ type RouteGuardProps = {
 export function RouteGuard({ children }: RouteGuardProps) {
   const router = useRouter();
   const { session, setSession } = useAuthStore();
-  const [localSession] = useState(() => getSession());
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    if (!localSession) {
-      router.replace("/auth/login");
+    if (typeof window === "undefined") return;
+    const existing = getSession();
+    if (existing) {
+      setSession(existing);
+      setChecking(false);
       return;
     }
-    setSession(localSession);
-  }, [localSession, router, setSession]);
+    setChecking(false);
+    router.replace("/auth/login");
+  }, [router, setSession]);
 
-  if (!localSession || !session) {
+  if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950">
         <div className="glass flex items-center gap-3 px-6 py-4">
@@ -33,6 +37,8 @@ export function RouteGuard({ children }: RouteGuardProps) {
       </div>
     );
   }
+
+  if (!session) return null;
 
   return <>{children}</>;
 }
